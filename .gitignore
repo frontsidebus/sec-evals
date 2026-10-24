@@ -1,0 +1,19 @@
+# The operator's site values: never commit. `deck install evals` (local-inference-deck) makes site.env a symlink
+# to the operator's site.env; run.py's --site-env default reads it.
+site.env
+site.env.bak-*
+*.env
+!*.env.example
+.sanitize-extra
+.sanitize-words
+*.key
+
+# evals: converted benchmark data and run results (regenerate data with evals/datasets/*/fetch.py). Gate
+# baselines and run state live under evals/results/; copy them between checkouts, never commit them.
+evals/data/
+evals/results/
+
+# python bytecode (confirmatory runs refuse to start while any __pycache__ exists under evals/)
+__pycache__/
+*.pyc
+.pytest_cache/
