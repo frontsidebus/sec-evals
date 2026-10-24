@@ -1,0 +1,14 @@
+# evals/harness.pin: sha256 of every HARNESS_FILES entry in evals/run.py, one "<sha256>  <path>" line
+# each (sha256sum format, so `sha256sum -c evals/harness.pin` from the repo root also checks it).
+# Update only with a deliberate harness change, in the same commit:
+#   python3 -B evals/tests/test_harness_pin.py --write
+d3362ca06aaf4fd44ef6a3ccb061e590c766fac1f69a5c40b2c4ea0cc9a63d49  evals/run.py
+e4dcdc136399b9ce5ed68a676b9e664a1b10c54ee11c40f84b4db6f96eec87fa  evals/scorers.py
+2dbccb57c928bf4ad2dcb9c21f793a36c926f2b4725eb6767cb6dfbd3dc68054  evals/report.py
+34cd480c9875f4057514fde25756efe0c59cab9c783f1fe9a5f62656e5eb833e  evals/stats.py
+34ea4c7b59f889a8bea494df2bc9781fb3fb6a861cf35604572a97960fdfe446  evals/grading.py
+7ab0dbb062ea6f747dc94c804549f8ba60693e27f826ea2f296822557242174e  evals/datasets/audit.py
+747cebde6d3ec6307b7d243facc6c040918d19957d53e4d2611e2a9d7aad4069  evals/prompts/llm_judge.md
+11251e6c1dbb3d9c5450bc4ab62eefab16c121b8c15929d73682422b116e08ac  evals/prompts/model_families.json
+9a780f2710b81adaa2062b8d1239fc52cf7fb8392af44a1f20219f0514c809e7  evals/plans/c1-interventions.json
+aec62c0279e35fa7db2b0f8c3905b75060a4e943db1e4d1cb97bead8b447541b  evals/plans/comparisons-C1.json
