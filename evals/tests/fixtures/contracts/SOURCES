@@ -1,0 +1,4 @@
+# evals/tests/fixtures/contracts/SOURCES: where scripts/vendor-contracts.sh copied the contracts from.
+# <owner> <tag|untagged> <commit>
+local-inference-deck deck-tools-v1.0.0 d044d9e986394bb675af51fba55083be44deb69f
+# judge/contracts/: from the local-inference-deck checkout above

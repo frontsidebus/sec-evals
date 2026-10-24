@@ -1,6 +1,6 @@
 """C4 consumer (sec-evals): run.llama_swap_entry reproduces the deck's serving-identity vectors.
 
-Reads only vendored copies (refresh: python3 contracts/tools/contracts.py vendor --write in the deck repo):
+Reads only vendored copies (refresh: scripts/vendor-contracts.sh <deck checkout at a tag>):
   fixtures/llama-swap.contract.yaml            <- contracts/serving-identity/llama-swap.contract.yaml
   fixtures/contracts/serving-vectors.json      <- contracts/serving-identity/vectors.json
   fixtures/contracts/serving.schema.json       <- contracts/serving-identity/serving.schema.json

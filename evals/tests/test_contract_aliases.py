@@ -1,7 +1,7 @@
 """C3 consumer (sec-evals): the gateway aliases this harness relies on are the deck's contract.
 
 Reads the vendored fixtures/contracts/aliases.json (a copy of the deck's contracts/aliases.json; refresh with
-`python3 contracts/tools/contracts.py vendor --write` in the deck repo) and run.py's constants. run.py,
+`scripts/vendor-contracts.sh <deck checkout at a tag>`) and run.py's constants. run.py,
 comparisons-C1.json and the gate manifests are only READ here, never edited (run.py and comparisons-C1.json are
 harness files). No network.
 """

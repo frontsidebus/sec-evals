@@ -2,7 +2,7 @@
 
 run.py keeps its own list (it is a harness file: read here, never edited). The contract is the vendored
 fixtures/contracts/frontier-env.json (a copy of judge/contracts/frontier-env.json; refresh with
-`python3 contracts/tools/contracts.py vendor --write` in the deck repo).
+`scripts/vendor-contracts.sh <deck checkout at a tag>`).
 """
 import json
 from pathlib import Path
