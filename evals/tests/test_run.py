@@ -10,6 +10,7 @@ from pathlib import Path
 
 import pytest
 
+import llama_swap_template as LST
 import report as R
 import run as RUN
 import scorers as S
@@ -127,9 +128,9 @@ def all_output(env):
 
 
 def test_end_to_end_mcq(gw, env, capsys):
-    rc = RUN.main(base_args(env, gw, "--suite", str(SAMPLES / "mcq.jsonl"), "--model", "coder-fast", "--limit", "3"))
+    rc = RUN.main(base_args(env, gw, "--suite", str(SAMPLES / "mcq.jsonl"), "--model", LST.MOE_ALIAS, "--limit", "3"))
     assert rc == 0
-    d = run_dir(env, "t1-coder-fast")
+    d = run_dir(env, f"t1-{LST.MOE_ALIAS}")
     assert len(gw.requests) == 3
     body = gw.requests[0]
     assert body["temperature"] == 0 and body["seed"] == 1234 and body["max_tokens"] == RUN.MAX_TOKENS["mcq"]
@@ -140,7 +141,7 @@ def test_end_to_end_mcq(gw, env, capsys):
     assert summ["totals"]["n_items"] == 3 and summ["totals"]["passed"] == 1
     assert summ["suites"]["sample-mcq"]["unparsed"] == 2
     run = json.loads((d / "run.json").read_text())
-    assert run["thinking"] == "off" and run["llama_swap"]["model_id"] == "qwen3.6-35b-a3b"
+    assert run["thinking"] == "off" and run["llama_swap"]["model_id"] == LST.MOE_ID
     assert run["datasets"][0]["path"] == "evals/samples/mcq.jsonl" and len(run["datasets"][0]["sha256"]) == 64
     assert run["git"]["sha"] and run["ended"]
     assert (d / "report.md").read_text().startswith("# Eval run")
@@ -304,16 +305,15 @@ def test_suite_system_file_and_item_override(tmp_path):
     assert RUN.build_messages(items[1])[0]["content"] == "ITEM SYS"
 
 
-# R2: this test no longer reads walter/'s template by default. It reads $SPARK_LLAMA_SWAP_TEMPLATE when set (the deck
-# CI sets it to walter/llama-swap/config.yaml.tmpl while the template is in this repo), else the vendored C4 fixture
-# (a copy of contracts/serving-identity/llama-swap.contract.yaml; the deck's C4 provider test asserts the same
-# fields on the real template).
-LLAMA_SWAP_FIXTURE = EVALS / "tests" / "fixtures" / "llama-swap.contract.yaml"
+# R2: this test reads $SPARK_LLAMA_SWAP_TEMPLATE when set (the deck's integration run points it at the deck's
+# walter/llama-swap/config.yaml.tmpl), else the vendored C4 fixture (a copy of the deck's
+# contracts/serving-identity/llama-swap.contract.yaml; the deck's C4 provider test asserts the same fields on the
+# real template). See llama_swap_template.py.
+LLAMA_SWAP_FIXTURE = LST.FIXTURE
 
 
 def llama_swap_template() -> Path:
-    env = os.environ.get("SPARK_LLAMA_SWAP_TEMPLATE")
-    return Path(env) if env else LLAMA_SWAP_FIXTURE
+    return LST.path()
 
 
 def test_llama_swap_entry_from_template():
@@ -639,15 +639,16 @@ def _scores(env, name):
 
 
 def test_every_sampler_is_sent_so_server_defaults_cannot_leak(gw, env):
-    """coder-fast's llama-swap cmd sets --presence-penalty 1.5; the request must override it (and every other knob)."""
-    assert RUN.main(base_args(env, gw, "--suite", str(SAMPLES / "mcq.jsonl"), "--model", "coder-fast",
+    """coder-fast's llama-swap cmd sets --presence-penalty 1.5 (example-moe's in the C4 fixture); the request must
+    override it (and every other knob)."""
+    assert RUN.main(base_args(env, gw, "--suite", str(SAMPLES / "mcq.jsonl"), "--model", LST.MOE_ALIAS,
                               "--limit", "1", "--thinking", "off,on")) == 0
     off, on = gw.requests
     for body, prof in ((off, "off"), (on, "thinking")):
         for k, v in RUN.SAMPLING_PROFILES[prof].items():
             assert body[k] == v, k
     assert off["presence_penalty"] == 0.0 and off["repeat_penalty"] == 1.0 and on["top_k"] == 20
-    run = _rj(env, "t1-coder-fast")
+    run = _rj(env, f"t1-{LST.MOE_ALIAS}")
     assert run["serving"]["sampler_overrides"]["presence_penalty"] == {"server": "1.5", "sent": 0.0}
     assert run["serving"]["samplers_left_to_server"] == []
     assert set(RUN.SAMPLER_KEYS) <= set(run["request_params"]) and "messages" not in run["request_params"]
@@ -1102,14 +1103,15 @@ def test_llm_judge_items_need_an_explicit_grader(gw, env, capsys):
 
 
 def test_grader_cache_key_includes_the_served_identity(tmp_path):
-    a = RUN.parse_args(["--suite", "x", "--model", "coder", "--grader-model", "big"])
-    ident = RUN.grader_identity("big", a)
+    big = LST.GRADER_ALIAS       # "big" in the deck's template; an alias served from a .gguf in the C4 fixture
+    a = RUN.parse_args(["--suite", "x", "--model", "coder", "--grader-model", big])
+    ident = RUN.grader_identity(big, a)
     assert ident["model_file"].endswith(".gguf") and ident["quant"]
-    base = {"model": "big", "thinking": "off", "temperature": 0, "prompt": "p", "prompt_sha256": "s",
+    base = {"model": big, "thinking": "off", "temperature": 0, "prompt": "p", "prompt_sha256": "s",
             "max_candidate_chars": 1}
-    with_id = RUN.judge_cfg({**base, "served_identity": {"big": ident}}, "big")
+    with_id = RUN.judge_cfg({**base, "served_identity": {big: ident}}, big)
     assert RUN.grader_cache_cfg(with_id)["served_identity"] == ident
-    other = RUN.judge_cfg({**base, "served_identity": {"big": dict(ident, quant="Q8_0")}}, "big")
+    other = RUN.judge_cfg({**base, "served_identity": {big: dict(ident, quant="Q8_0")}}, big)
     assert RUN.grader_cache_cfg(other) != RUN.grader_cache_cfg(with_id)
     assert RUN.grader_identity("judge-unknown", a) is None  # nothing known: the key is unchanged (old caches match)
     assert "served_identity" not in RUN.grader_cache_cfg(RUN.judge_cfg({**base, "served_identity": {}}, "x"))
@@ -1401,13 +1403,19 @@ def test_R3_pinned_interventions(gw, env, tmp_path, monkeypatch):
                               "--intervention", "D6-defensive-system-prompt")) == 0
     assert all(r["messages"][0]["content"] == d6["text"] for r in gw.requests)
     assert _rj(env, "t1-coder-fast")["protocol"]["interventions"][0]["sha256"] == d6["sha256"]
+    assert RUN.main(base_args(env, gw, "--suite", str(MCQ), "--model", "coder", "--limit", "1", "--run-name", "t10",
+                              "--intervention", "no-such")) == 2
+
+
+@LST.needs_deck_template
+def test_R3_D8_pins_match_the_deck_template(gw, env):
+    """The D8 pins in plans/c1-interventions.json are the deck template's flash cmd: checked against the deck's
+    walter/llama-swap/config.yaml.tmpl ($SPARK_LLAMA_SWAP_TEMPLATE), so it runs in the deck's integration run."""
     # D8: the repo template is the tuned flash; the untuned intervention needs the untuned live config
     assert RUN.main(base_args(env, gw, "--suite", str(MCQ), "--model", "coder", "--limit", "1", "--run-name", "t8",
                               "--intervention", "D8-tuned-flash")) == 0
     assert RUN.main(base_args(env, gw, "--suite", str(MCQ), "--model", "coder", "--limit", "1", "--run-name", "t9",
                               "--intervention", "D8-untuned-flash")) == 2
-    assert RUN.main(base_args(env, gw, "--suite", str(MCQ), "--model", "coder", "--limit", "1", "--run-name", "t10",
-                              "--intervention", "no-such")) == 2
 
 
 def test_R3_family_is_resolved_from_the_served_model_file(tmp_path):
@@ -1591,6 +1599,7 @@ def test_R4_B2_intervention_mismatch_cannot_be_waived(gw, env, tmp_path, monkeyp
     assert "intervention is an integrity or estimand check" in capsys.readouterr().err
 
 
+@LST.needs_deck_template   # D8-tuned-flash must match the deck template's flash cmd first
 def test_R4_B3_live_props_model_file_is_checked_for_D8(gw, env, tmp_path, monkeypatch, capsys):
     _clean_git(monkeypatch)
     iv = json.loads(RUN.INTERVENTIONS.read_text())["interventions"]["D8-tuned-flash"]
