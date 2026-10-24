@@ -28,7 +28,7 @@ jobs:
       - name: Install tools (Ubuntu packages)
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq --no-install-recommends python3-pytest shellcheck
+          sudo apt-get install -y -qq --no-install-recommends python3-pytest python3-numpy shellcheck
       # vendored deck-tools (tools/deck-tools/README.md): every file matches tools/tools.lock (content and mode);
       # on a pull request, a changed engine must come with a version bump (a re-sync from a newer deck tag)
       - name: deck-tools verify
