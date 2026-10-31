@@ -879,7 +879,13 @@ def test_family_lineage_r4():
     assert ov and ov[0]["reason"] == "identity_conflict"     # unknown sha once shas are pinned
     assert G.family_overlap(["judgeX"], ["coder"], pinned,
                             identities={"judgeX": {"model_sha256": "CD" * 32, "model_file": gemma_file}}) == []
-    assert G.identity_notes({"j": {"model_sha256": "ab" * 32}})[0].startswith("sha_unpinned")
+    unpinned = {**t, "sha256": {}}
+    assert G.identity_notes({"j": {"model_sha256": "ab" * 32}}, unpinned)[0].startswith("sha_unpinned")
+    # the live table is pinned (R7): every served weight sha resolves, an unknown sha is a conflict
+    assert t["sha256"] and G.identity_notes({"j": {"model_sha256": "ab" * 32}}) == []
+    for sha, e in t["sha256"].items():
+        assert G.model_families(sha) == set(e["families"]) | set(e["base"]), e["file"]
+    assert G.identity_families("coder", {"model_sha256": "ab" * 32})[1] is not None
 
 
 def test_cluster_bootstrap_is_wider_when_errors_cluster_by_item():
