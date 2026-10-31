@@ -300,6 +300,107 @@
       ]
     }
   },
-  "sha256": {},
-  "sha256_todo": "Pin each served weight file's sha256 here at freeze (sha -> families); empty until then."
+  "sha256": {
+    "3f227079003add2511437e5b1e94812e363385225bf6a9b47b0054a72bc8b01e": {
+      "families": [
+        "qwen"
+      ],
+      "base": [
+        "qwen"
+      ],
+      "file": "Qwen3.8-27B-UD-Q4_K_XL.gguf",
+      "hf_repo": "unsloth/Qwen3.8-27B-GGUF",
+      "hf_revision": "4ca720788d1e01f1bff70c033e0d0028fd02e502"
+    },
+    "071ee2a008ec51372f990d8efbea92ec9dd0137974110ef68fbfde429c8c6dd4": {
+      "families": [
+        "qwen"
+      ],
+      "base": [
+        "qwen"
+      ],
+      "file": "Qwen3.6-35B-A3B-UD-IQ4_NL_XL.gguf",
+      "hf_repo": "unsloth/Qwen3.6-35B-A3B-GGUF",
+      "hf_revision": "a483e9e6cbd595906af30beda3187c2663a1118c"
+    },
+    "c50840516a01a2ebecbe9acb01b6bdcc55806ab34c0ff4cc5a68788c976985c3": {
+      "families": [
+        "qwen"
+      ],
+      "base": [
+        "qwen"
+      ],
+      "file": "Qwen3-Coder-Next-UD-IQ4_NL.gguf",
+      "hf_repo": "unsloth/Qwen3-Coder-Next-GGUF",
+      "hf_revision": "ce09c67b53bc8739eef83fe67b2f5d293c270632"
+    },
+    "00b5a7c497f0c8934033088c10a7fa9a4c015e46ee6d89e9c6890650ba5d0e71": {
+      "families": [
+        "gemma"
+      ],
+      "base": [
+        "gemma"
+      ],
+      "file": "gemma-4-31B-it-qat-UD-Q4_K_XL.gguf",
+      "hf_repo": "unsloth/gemma-4-31B-it-qat-GGUF",
+      "hf_revision": "43cc1aeb31adf47ec06a854507ce552cd9862e6f"
+    },
+    "d904b3579a9fbfbd50bc9bf40cb7384909edbd69fa9276db5ddc853e80f0edca": {
+      "families": [
+        "gemma"
+      ],
+      "base": [
+        "gemma"
+      ],
+      "file": "mmproj-BF16.gguf",
+      "hf_repo": "unsloth/gemma-4-31B-it-qat-GGUF",
+      "hf_revision": "43cc1aeb31adf47ec06a854507ce552cd9862e6f"
+    },
+    "17823599694fa3503ef54bf748d5078c6ce881f4d01616cafa255dc05d215a08": {
+      "families": [
+        "hermes"
+      ],
+      "base": [
+        "seed-oss"
+      ],
+      "file": "hermes-4_3_36b-Q4_K_M.gguf",
+      "hf_repo": "NousResearch/Hermes-4.3-36B-GGUF",
+      "hf_revision": "9ce6f623874b8e9cb7617c399b67cec820b7a594",
+      "lineage_source": "see models.hermes"
+    },
+    "4c1eb2ceb4915e1192f4f386021897bde56a97f40a0bb78bb86465e0f7d2aca3": {
+      "families": [
+        "qwen"
+      ],
+      "base": [
+        "qwen"
+      ],
+      "file": "Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "hf_repo": "ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF",
+      "hf_revision": "ed59f92082b1e93c0e96d60a8b11aab089b52f09"
+    },
+    "316b46f3a2dbd68c900f43136ab9449f9dcc3725dfd8c794847c204bc161e113": {
+      "families": [
+        "qwen"
+      ],
+      "base": [
+        "qwen"
+      ],
+      "file": "Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf",
+      "hf_repo": "ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF",
+      "hf_revision": "ed59f92082b1e93c0e96d60a8b11aab089b52f09"
+    },
+    "58a47d6a216307e9b97172d5bfdc3436a8994b632f5e436b9bb6edf8951da8d1": {
+      "families": [
+        "qwen"
+      ],
+      "base": [
+        "qwen"
+      ],
+      "file": "mtp-Qwen3.8-Flash-Next-Q8_0.gguf",
+      "hf_repo": "unsloth/Qwen3.8-Flash-Next-GGUF",
+      "hf_revision": "766911a6b7369840a91dbcd95f9f997acaab6cd6"
+    }
+  },
+  "sha256_todo": "Pinned for the C1 freeze draft (2026-10-30): the sha256 of every served weight file, computed on the backend and matched to the Hugging Face LFS oid at the recorded revision."
 }

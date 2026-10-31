@@ -2,6 +2,9 @@
 """Generate the protocol C1 freeze manifests and run script (PROTOCOL.md C1.3, C1.14). No model calls.
 
 Order (PROTOCOL C1.14):
+  0. the C1 data build: the rigor-layer files, rebuilt offline from the pinned downloads in evals/data/.cache
+     (byte-identical on rebuild; evals/data is gitignored, so this is what the freeze pins by sha256):
+         for f in nvd-recent ctibench cse-frr; do python3 -B evals/datasets/$f/fetch.py --offline --rigor; done
   1. commit the harness; note its full SHA (git rev-parse HEAD)
   2. python3 evals/datasets/audit.py verify --complete --sealed-only ...   # the data-side twin of run.py's check
   3. python3 evals/plans/make_c1.py freeze --harness-sha <SHA> --serving-config evals/plans/serving-C1.json
